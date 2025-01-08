@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
 interface FinancialRecord {
   userId: string;
@@ -18,6 +18,9 @@ const financialRecordSchema = new mongoose.Schema<FinancialRecord>({
   paymentMethod: { type: String, required: true },
 });
 
-const FinancialRecordModel = mongoose.model<FinancialRecord>('FinancialRecord', financialRecordSchema);
+const FinancialRecordModel = mongoose.model<FinancialRecord>(
+  "FinancialRecord",
+  financialRecordSchema
+);
 
 export default FinancialRecordModel;

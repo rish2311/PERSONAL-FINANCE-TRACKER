@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Your Extension",
+  "version": "1.0",
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/assets/styles.css",
+        "src/assets/locales/en/translation.json"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

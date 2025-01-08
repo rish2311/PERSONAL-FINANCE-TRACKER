@@ -1,94 +1,60 @@
-import express, { Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import FinancialRecordModel from "../schema/financial-record";
-
-interface FinancialRecord {
-  userId: string;
-  date: Date;
-  description: string;
-  amount: number;
-  category: string;
-  paymentMethod: string;
-}
 
 const router = express.Router();
 
-// Get all records by User ID
-router.get(
-  "/getAllByUserID/:userId",
-  async (req: Request<{ userId: string }>, res: Response) => {
-    try {
-      const { userId } = req.params;
-      const records = await FinancialRecordModel.find({ userId });
-
-      if (!records || records.length === 0) {
-        return res.status(404).send("No records found for the user.");
-      }
-
-      res.status(200).json(records);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Internal Server Error");
+router.get("/getAllByUserID/:userId", async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const records = await FinancialRecordModel.find({ userId: userId });
+    if (records.length === 0) {
+      return res.status(404).send("No records found for the user.");
     }
+    res.status(200).send(records);
+  } catch (err) {
+    res.status(500).send(err);
   }
-);
+});
 
-// Create a new financial record
-router.post(
-  "/",
-  async (req: Request<{}, {}, FinancialRecord>, res: Response) => {
-    try {
-      const newRecord = new FinancialRecordModel(req.body);
-      const savedRecord = await newRecord.save();
-      res.status(201).json(savedRecord);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Internal Server Error");
-    }
+router.post("/", async (req: Request, res: Response) => {
+  try {
+    const newRecordBody = req.body;
+    const newRecord = new FinancialRecordModel(newRecordBody);
+    const savedRecord = await newRecord.save();
+
+    res.status(200).send(savedRecord);
+  } catch (err) {
+    res.status(500).send(err);
   }
-);
+});
 
-// Update an existing financial record by ID
-router.put(
-  "/:id",
-  async (req: Request<{ id: string }, {}, FinancialRecord>, res: Response) => {
-    try {
-      const { id } = req.params;
-      const updatedRecord = await FinancialRecordModel.findByIdAndUpdate(
-        id,
-        req.body,
-        { new: true, runValidators: true }
-      );
+router.put("/:id", async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const newRecordBody = req.body;
+    const record = await FinancialRecordModel.findByIdAndUpdate(
+      id,
+      newRecordBody,
+      { new: true }
+    );
 
-      if (!updatedRecord) {
-        return res.status(404).send("Record not found.");
-      }
+    if (!record) return res.status(404).send();
 
-      res.status(200).json(updatedRecord);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Internal Server Error");
-    }
+    res.status(200).send(record);
+  } catch (err) {
+    res.status(500).send(err);
   }
-);
+});
 
-// Delete a financial record by ID
-router.delete(
-  "/:id",
-  async (req: Request<{ id: string }>, res: Response) => {
-    try {
-      const { id } = req.params;
-      const deletedRecord = await FinancialRecordModel.findByIdAndDelete(id);
-
-      if (!deletedRecord) {
-        return res.status(404).send("Record not found.");
-      }
-
-      res.status(200).json(deletedRecord);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Internal Server Error");
-    }
+router.delete("/:id", async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const record = await FinancialRecordModel.findByIdAndDelete(id);
+    if (!record) return res.status(404).send();
+    res.status(200).send(record);
+  } catch (err) {
+    res.status(500).send(err);
   }
-);
+});
 
 export default router;
