@@ -27,7 +27,10 @@ const EditableCell: React.FC<EditableCellProps> = ({
   };
 
   return (
-    <div onClick={() => editable && setIsEditing(true)}>
+    <div 
+    onClick={() => editable && setIsEditing(true)}
+    style={{ cursor: editable ? "pointer": "default"}}
+    >
       {isEditing ? (
         <input
           value={value}
